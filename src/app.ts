@@ -10,7 +10,7 @@ const app: Application = express();
 
 dotenv.config();
 const port: number = parseInt(process.env.PORT as string, 10) || 8080;
-//middleware
+//middleware 
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 app.use(morgan("dev"));
