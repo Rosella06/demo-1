@@ -5,9 +5,9 @@ const userRouter: Router = Router();
 
 //user 
 userRouter.get('/', getUser);
-userRouter.get('/:userId', getUserById);
+userRouter.get('/:id', getUserById);
 userRouter.post('/', createUser);
-userRouter.put('/:userId', updateUser);
-userRouter.delete('/:userId', deleteUser);
+userRouter.put('/:id', updateUser);
+userRouter.delete('/:id', deleteUser);
 
 export default userRouter;

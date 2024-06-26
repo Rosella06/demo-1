@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { BaseResponse } from "../models";
+import { BaseResponse, ZUser } from "../models";
 import { addUser, changeUser, findUser, removeUser, userList } from "../services";
-import { user_order } from "@prisma/client";
+import { User } from "@prisma/client";
+import { z } from "zod";
+import { HttpError, ValidationError } from "../error";
+import { fromZodError } from "zod-validation-error";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
-export const getUser = async (req: Request, res: Response<BaseResponse<user_order[]>>, next: NextFunction) => {
+export const getUser = async (req: Request, res: Response<BaseResponse<User[]>>, next: NextFunction) => {
   try {
     res.status(200).json({
       message: 'Successful',
@@ -15,48 +19,55 @@ export const getUser = async (req: Request, res: Response<BaseResponse<user_orde
   }
 }
 
-export const getUserById = async (req: Request, res: Response<BaseResponse<user_order | null>>, next: NextFunction) => {
+export const getUserById = async (req: Request, res: Response<BaseResponse<User | null>>, next: NextFunction) => {
   try {
     res.status(200).json({
       message: 'Successful',
       success: true,
-      data: await findUser(Number(req.params.userId))
+      data: await findUser(Number(req.params.id))
     });
   } catch (error) {
     next(error);
   }
 }
 
-export const createUser = async (req: Request, res: Response<BaseResponse<user_order>>, next: NextFunction) => {
+export const createUser = async (req: Request, res: Response<BaseResponse<User>>, next: NextFunction) => {
   try {
+    const body = ZUser.parse(req.body);
     res.status(201).json({
       message: 'Successful',
       success: true,
-      data: await addUser(req.body as user_order)
+      data: await addUser(body as User)
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      next(new ValidationError(fromZodError(error).toString()));
+    } else if (error instanceof PrismaClientKnownRequestError) {
+      next(new HttpError(400, `${error.name} : ${error.code}`));
+    } else {
+      next(error);
+    }
+  }
+}
+
+export const updateUser = async (req: Request, res: Response<BaseResponse<User>>, next: NextFunction) => {
+  try {
+    res.status(200).json({
+      message: 'Successful',
+      success: true,
+      data: await changeUser(Number(req.params.id), req.body as User)
     });
   } catch (error) {
     next(error);
   }
 }
 
-export const updateUser = async (req: Request, res: Response<BaseResponse<user_order>>, next: NextFunction) => {
+export const deleteUser = async (req: Request, res: Response<BaseResponse<User>>, next: NextFunction) => {
   try {
     res.status(200).json({
       message: 'Successful',
       success: true,
-      data: await changeUser(Number(req.params.userId), req.body as user_order)
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export const deleteUser = async (req: Request, res: Response<BaseResponse<user_order>>, next: NextFunction) => {
-  try {
-    res.status(200).json({
-      message: 'Successful',
-      success: true,
-      data: await removeUser(Number(req.params.userId))
+      data: await removeUser(Number(req.params.id))
     });
   } catch (error) {
     next(error);
