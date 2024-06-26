@@ -14,8 +14,7 @@ const port: number = parseInt(process.env.PORT as string, 10) || 8080;
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 app.use(morgan("dev"));
-
-//route 12334356758
+//route
 app.use('/api', routes);
 app.use(globalErrorHanlder);
 
