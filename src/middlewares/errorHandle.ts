@@ -6,7 +6,7 @@ export const globalErrorHanlder = (error: unknown, req: Request, res: Response<B
   let statusCode = 500;
   let message = '';
 
-  if(error instanceof HttpError) {
+  if(error instanceof HttpError) { 
     statusCode = error.statusCode;
   }
 

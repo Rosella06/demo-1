@@ -8,10 +8,10 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement()) @db.Int
-  username String   @db.VarChar(100)
+  id       Int      @id @default(autoincrement())
+  username String   @unique @db.VarChar(100)
   password String   @db.VarChar(100)
-  age      Int      @db.Int
+  age      Int
   createAt DateTime @default(now())
   updateAt DateTime @default(now()) @updatedAt
   posts    Post[]
@@ -19,22 +19,39 @@ model User {
 }
 
 model Post {
-  id         Int      @id @default(autoincrement()) @db.Int
-  userId     Int      @db.Int
+  id         Int      @id @default(autoincrement())
   postTitle  String   @db.VarChar(100)
   postDetail String   @db.VarChar(100)
   createAt   DateTime @default(now())
   updateAt   DateTime @default(now()) @updatedAt
+  userId     Int
   users      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Post_userId_fkey")
 }
 
 model Profile {
-  id       Int      @id @default(autoincrement()) @db.Int
-  userId   Int      @unique @db.Int
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
   email    String?  @db.VarChar(100)
   picture  String?  @db.VarChar(100)
-  location String?  @db.VarChar(100)
   createAt DateTime @default(now())
   updateAt DateTime @default(now()) @updatedAt
+  location String?  @db.VarChar(100)
   user     User     @relation(fields: [userId], references: [id])
+}
+
+model product_login {
+  lo_id    Int     @id @default(autoincrement())
+  name     String? @db.VarChar(45)
+  email    String? @db.VarChar(45)
+  password String? @db.VarChar(45)
+}
+
+model tbl_product {
+  p_id           Int     @id @default(autoincrement())
+  p_product_name String? @db.VarChar(45)
+  p_quantity     Int?    @db.Int
+  p_price        Int?    @db.Int
+  p_image        String? @db.VarChar(255)
 }
