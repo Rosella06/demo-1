@@ -108,7 +108,6 @@ export const signup = async (username: string, password: string, age: number) =>
   }
 };
 
-
 export const checkLogin = async (userName: string, password: string) =>{
 try {
   const result = await prisma.user.findUnique({
